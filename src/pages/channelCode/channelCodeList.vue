@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
-import { getHistoryList, getMessageList } from '~/api'
+import { groupByChannel } from '~/api'
 
 const today0 = new Date()
 today0.setMonth(today0.getMonth() - 1)
@@ -9,18 +8,11 @@ today0.setHours(0, 0, 0, 0)
 const today1 = new Date()
 today1.setHours(23, 59, 59, 999)
 const datetimerange = ref<[Date, Date]>([today0, today1])
-
-const centerDialogVisible = ref(false)
-const historyData = ref<any[]>([])
-
 const pageInfo = ref({
   pageNum: 1,
   pageSize: 30,
-  studentName: '',
-  schoolName: '',
   beginTime: '',
   endTime: '',
-  phoneNumber: '',
   total: 0,
 })
 const shortcuts = [
@@ -85,35 +77,11 @@ function getMessageListByPageNumb() {
     beginTime,
     endTime,
   }
-  getMessageList(param).then((res: any) => {
-    tableData.value = res?.messagePoList || []
+  groupByChannel(param).then((res: any) => {
+    tableData.value = res?.dailyRegisterList || []
     pageInfo.value.total = res?.total || 0
   }).catch(() => {
     tableData.value = []
-  })
-}
-
-function handleHistoryScoreInfo(row: any) {
-  getHistoryList({
-    openId: row.openId,
-  }).then((res: any) => {
-    if (res?.historyPoList?.length > 0) {
-      const historyDataList: any[] = []
-      res?.historyPoList.forEach((item: any) => {
-        const searchKey = JSON.parse(item.searchKey)
-        const subjectList: any = {}
-        searchKey.forEach((key: any) => {
-          subjectList[key.subject] = key.grade
-        })
-        historyDataList.push(subjectList)
-      })
-      historyData.value = historyDataList || []
-      centerDialogVisible.value = true
-    }
-    else {
-      ElMessage.error('暂无历史信息')
-    }
-  }).catch(() => {
   })
 }
 
@@ -127,36 +95,7 @@ onMounted(() => {
     <el-container>
       <el-main>
         <div class="search-bar">
-          <el-input
-            v-model="pageInfo.studentName"
-            style="max-width: 240px;height: 50%;"
-            placeholder="请输入学生姓名"
-            @keyup.enter="getMessageListByPageNumb()"
-          >
-            <template #prepend>
-              学生姓名
-            </template>
-          </el-input>
-          <el-input
-            v-model="pageInfo.schoolName"
-            style="margin-left: 10px; max-width: 240px;height: 50%;"
-            placeholder="请输入学校名称"
-            @keyup.enter="getMessageListByPageNumb()"
-          >
-            <template #prepend>
-              学校名称
-            </template>
-          </el-input>
-          <el-input
-            v-model="pageInfo.phoneNumber"
-            style="margin-left: 10px; max-width: 240px;height: 50%;"
-            placeholder="请输入手机号"
-            @keyup.enter="getMessageListByPageNumb()"
-          >
-            <template #prepend>
-              手机号
-            </template>
-          </el-input>
+          <h3>渠道分析（非实名）</h3>
           <div style="margin-left: 10px; height: 50%;">
             <el-date-picker
               v-model="datetimerange"
@@ -174,18 +113,9 @@ onMounted(() => {
           </el-button>
         </div>
         <el-table :data="tableData" height="85%">
-          <el-table-column prop="studentName" label="学生姓名" width="120" />
-          <el-table-column prop="schoolName" label="学校名称" width="220" />
-          <el-table-column prop="phoneNumber" label="手机号" width="220" />
-          <el-table-column prop="message" label="咨询内容" width="400" />
-          <el-table-column prop="createTime" label="创建时间" width="220" />
-          <el-table-column fixed="right" label="Operations" min-width="120">
-            <template #default="scope">
-              <el-button link type="primary" size="small" @click="handleHistoryScoreInfo(scope.row)">
-                历史信息
-              </el-button>
-            </template>
-          </el-table-column>
+          <el-table-column prop="channelCode" label="渠道号" />
+          <el-table-column prop="registerCount" label="数量" />
+          <el-table-column prop="registerDate" label="统计日期" />
         </el-table>
         <div class="pagination-bar-space">
           <el-pagination v-model:current-page="pageInfo.pageNum" class="pagination-bar" background layout="prev, pager, next" :total="pageInfo.total" @current-change="getMessageListByPageNumb()" />
@@ -193,24 +123,6 @@ onMounted(() => {
       </el-main>
     </el-container>
   </el-container>
-  <el-dialog
-    v-model="centerDialogVisible"
-    title="历史信息"
-    width="900"
-  >
-    <el-table :data="historyData" height="85%" :border="true" :stripe="true">
-      <el-table-column prop="yuwen" label="语文" />
-      <el-table-column prop="shuxue" label="数学" />
-      <el-table-column prop="yingwen" label="外语" />
-      <el-table-column prop="zhengzhi" label="政治" />
-      <el-table-column prop="lishi" label="历史" />
-      <el-table-column prop="dili" label="地理" />
-      <el-table-column prop="wuli" label="物理" />
-      <el-table-column prop="huaxue" label="化学" />
-      <el-table-column prop="shengwu" label="生物" />
-      <el-table-column prop="jishu" label="技术" />
-    </el-table>
-  </el-dialog>
 </template>
 
 <style scoped>

@@ -40,13 +40,13 @@ export default defineConfig({
     }),
     Unocss(),
   ],
-  server: {
-    proxy: {
-      '/api/': {
-        target: 'http://10.42.84.149:8080/api/',
-        // changeOrigin: true,
-        rewrite: p => p.replace(/^\/api/, ''),
-      },
-    },
-  },
+  // server: {
+  //   proxy: {
+  //     '/api/': {
+  //       target: 'http://10.42.84.149:8080/api/',
+  //       // changeOrigin: true,
+  //       rewrite: p => p.replace(/^\/api/, ''),
+  //     },
+  //   },
+  // },
 })

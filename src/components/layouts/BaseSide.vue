@@ -65,6 +65,22 @@ function handleClose(key: string, keyPath: string[]) {
         学生信息查询
       </template>
     </el-menu-item>
+    <el-menu-item index="/channelCode/channelCodeList">
+      <el-icon>
+        <IconMenu />
+      </el-icon>
+      <template #title>
+        渠道分析（非实名）
+      </template>
+    </el-menu-item>
+    <el-menu-item index="/channelCode/channelCodeRealList">
+      <el-icon>
+        <IconMenu />
+      </el-icon>
+      <template #title>
+        渠道分析（实名）
+      </template>
+    </el-menu-item>
     <!-- <el-menu-item index="3" disabled>
       <el-icon>
         <Document />
