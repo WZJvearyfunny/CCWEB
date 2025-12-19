@@ -101,7 +101,9 @@ function handleHistoryScoreInfo(row: any) {
       const historyDataList: any[] = []
       res?.historyPoList.forEach((item: any) => {
         const searchKey = JSON.parse(item.searchKey)
-        const subjectList: any = {}
+        const subjectList: any = {
+          createTime: item.createTime,
+        }
         searchKey.forEach((key: any) => {
           subjectList[key.subject] = key.grade
         })
@@ -177,8 +179,9 @@ onMounted(() => {
           <el-table-column prop="studentName" label="学生姓名" width="120" />
           <el-table-column prop="schoolName" label="学校名称" width="220" />
           <el-table-column prop="phoneNumber" label="手机号" width="220" />
-          <el-table-column prop="message" label="咨询内容" width="400" />
-          <el-table-column prop="createTime" label="创建时间" width="220" />
+          <el-table-column prop="message" label="咨询内容" width="300" />
+          <el-table-column prop="channelCode" label="来源渠道" width="220" />
+          <el-table-column prop="createTime" label="创建时间" width="120" />
           <el-table-column fixed="right" label="Operations" min-width="120">
             <template #default="scope">
               <el-button link type="primary" size="small" @click="handleHistoryScoreInfo(scope.row)">
@@ -196,9 +199,10 @@ onMounted(() => {
   <el-dialog
     v-model="centerDialogVisible"
     title="历史信息"
-    width="900"
+    width="1100"
   >
-    <el-table :data="historyData" height="85%" :border="true" :stripe="true">
+    <el-table :data="historyData" height="80%" :border="true" :stripe="true">
+      <el-table-column prop="createTime" label="搜索时间" width="180" />
       <el-table-column prop="yuwen" label="语文" />
       <el-table-column prop="shuxue" label="数学" />
       <el-table-column prop="yingwen" label="外语" />
