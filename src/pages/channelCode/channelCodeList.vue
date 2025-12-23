@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 import { VueUiDonut } from 'vue-data-ui'
 import { groupByChannel } from '~/api'
@@ -332,6 +333,15 @@ function getMessageListByPageNumb() {
   })
 }
 
+function toolShowDonutDialog() {
+  if (dataset.value.length > 0) {
+    showDonutDialog.value = true
+  }
+  else {
+    ElMessage.error('暂无数据')
+  }
+}
+
 onMounted(() => {
   getMessageListByPageNumb()
 })
@@ -358,7 +368,7 @@ onMounted(() => {
           <el-button style="margin-left: 10px;height: 50%;" @click="getMessageListByPageNumb()">
             查询
           </el-button>
-          <el-button style="margin-left: 10px;height: 50%;" @click="showDonutDialog = true">
+          <el-button style="margin-left: 10px;height: 50%;" @click="toolShowDonutDialog()">
             统计
           </el-button>
         </div>
