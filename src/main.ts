@@ -1,5 +1,6 @@
 import type { UserModule } from './types'
 import { ViteSSG } from 'vite-ssg'
+import { VueUiRadar } from 'vue-data-ui'
 
 // import "~/styles/element/index.scss";
 
@@ -9,10 +10,12 @@ import { ViteSSG } from 'vite-ssg'
 
 // or use cdn, uncomment cdn link in `index.html`
 
+import VueUiXy from 'vue-data-ui/vue-ui-xy'
 import { routes } from 'vue-router/auto-routes'
 import App from './App.vue'
 
 import '~/styles/index.scss'
+import 'vue-data-ui/style.css' // 包括CSS
 
 import 'uno.css'
 // If you want to use ElMessage, import it.
@@ -43,5 +46,7 @@ export const createApp = ViteSSG(
     Object.values(import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }))
       .forEach(i => i.install?.(ctx))
     // ctx.app.use(Previewer)
+    ctx.app.component('VueUiRadar', VueUiRadar)
+    ctx.app.component('VueUiXy', VueUiXy)
   },
 )

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
+import { VueUiDonut } from 'vue-data-ui'
 import { groupByChannel } from '~/api'
+import 'vue-data-ui/style.css'
 
 const today0 = new Date()
 today0.setMonth(today0.getMonth() - 1)
@@ -46,6 +48,236 @@ const shortcuts = [
 ]
 const tableData = ref<any[]>([])
 
+const showDonutDialog = ref(false)
+
+const config = ref<any>({
+  debug: false,
+  type: 'classic',
+  loading: false,
+  pie: false,
+  autoSize: false,
+  responsive: false,
+  theme: '',
+  customPalette: [],
+  useCssAnimation: true,
+  events: {
+    datapointEnter: null,
+    datapointLeave: null,
+    datapointClick: null,
+  },
+  serieToggleAnimation: {
+    show: true,
+    durationMs: 500,
+  },
+  startAnimation: {
+    show: true,
+    durationMs: 1000,
+    staggerMs: 50,
+  },
+  useBlurOnHover: true,
+  userOptions: {
+    show: true,
+    showOnChartHover: false,
+    keepStateOnChartLeave: true,
+    position: 'right',
+    buttons: {
+      img: true,
+      fullscreen: true,
+    },
+    callbacks: {
+      fullscreen: null,
+      img: null,
+    },
+    buttonTitles: {
+      img: 'Download PNG',
+      fullscreen: 'Toggle fullscreen',
+    },
+    print: {
+      scale: 2,
+      orientation: 'auto',
+      overflowTolerance: 0.2,
+    },
+  },
+  translations: {
+    total: 'Total',
+    average: 'Average',
+  },
+  table: {
+    show: false,
+    responsiveBreakpoint: 400,
+    useDialog: false,
+    th: {
+      backgroundColor: '#FFFFFFff',
+      color: '#1A1A1Aff',
+      outline: 'none',
+    },
+    td: {
+      backgroundColor: '#FFFFFFff',
+      color: '#1A1A1Aff',
+      outline: 'none',
+      roundingValue: 0,
+      roundingPercentage: 0,
+    },
+    columnNames: {
+      series: 'Series',
+      value: 'Value',
+      percentage: 'Percentage',
+    },
+  },
+  style: {
+    fontFamily: 'inherit',
+    chart: {
+      useGradient: false,
+      gradientIntensity: 40,
+      backgroundColor: '#FFFFFFff',
+      color: '#1A1A1Aff',
+      padding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      },
+      width: 512,
+      height: 360,
+      layout: {
+        curvedMarkers: false,
+        labels: {
+          dataLabels: {
+            showValueFirst: true,
+            usePercentageParens: true,
+            useValueParens: false,
+            show: true,
+            useLabelSlots: false,
+            hideUnderValue: 3,
+            smallArcClusterThreshold: 8,
+            smallArcClusterFontSize: 12,
+            oneLine: false,
+            prefix: '',
+            suffix: '',
+          },
+          value: {
+            rounding: 0,
+            show: true,
+            formatter: null,
+          },
+          percentage: {
+            color: '#1A1A1Aff',
+            bold: true,
+            fontSize: 18,
+            minFontSize: 6,
+            rounding: 0,
+            formatter: null,
+          },
+          name: {
+            color: '#1A1A1Aff',
+            bold: false,
+            fontSize: 14,
+            minFontSize: 6,
+          },
+          hollow: {
+            show: true,
+            total: {
+              show: true,
+              bold: false,
+              fontSize: 18,
+              color: '#AAAAAAff',
+              text: 'Total',
+              offsetY: 0,
+              value: {
+                color: '#1A1A1Aff',
+                fontSize: 18,
+                bold: true,
+                suffix: '',
+                prefix: '',
+                offsetY: 0,
+                rounding: 0,
+                formatter: null,
+              },
+            },
+            average: {
+              show: true,
+              bold: false,
+              fontSize: 18,
+              color: '#AAAAAAff',
+              text: 'Average',
+              offsetY: 0,
+              value: {
+                color: '#1A1A1Aff',
+                fontSize: 18,
+                bold: true,
+                suffix: '',
+                prefix: '',
+                offsetY: 0,
+                rounding: 0,
+                formatter: null,
+              },
+            },
+          },
+        },
+        donut: {
+          radiusRatio: 0.3,
+          strokeWidth: 64,
+          borderWidth: 1,
+          useShadow: false,
+          shadowColor: '#1A1A1A',
+          emptyFill: '#E1E5E8',
+          selectedColor: '#0000001A',
+          borderColorAuto: true,
+          borderColor: '#CCCCCC',
+        },
+      },
+      comments: {
+        show: true,
+        showInTooltip: true,
+        width: 100,
+        offsetY: 0,
+        offsetX: 0,
+      },
+      legend: {
+        show: true,
+        bold: false,
+        backgroundColor: '#FFFFFFff',
+        color: '#1A1A1Aff',
+        fontSize: 16,
+        showValueFirst: true,
+        usePercentageParens: true,
+        useValueParens: false,
+        roundingValue: 0,
+        roundingPercentage: 0,
+        showPercentage: true,
+        showValue: true,
+        position: 'bottom',
+      },
+      tooltip: {
+        show: true,
+        color: '#1A1A1Aff',
+        backgroundColor: '#FFFFFFff',
+        fontSize: 14,
+        customFormat: null,
+        borderRadius: 4,
+        borderColor: '#e1e5e8',
+        borderWidth: 1,
+        backgroundOpacity: 30,
+        position: 'center',
+        offsetY: 24,
+        smooth: true,
+        backdropFilter: true,
+        smoothForce: 0.18,
+        smoothSnapThreshold: 0.25,
+        showValueFirst: true,
+        usePercentageParens: true,
+        useValueParens: false,
+        showValue: true,
+        showPercentage: true,
+        roundingValue: 0,
+        roundingPercentage: 0,
+      },
+    },
+  },
+})
+
+const dataset = ref<any[]>([])
+
 function formatDate(dateStr: any) {
   const date = new Date(dateStr)
 
@@ -80,8 +312,23 @@ function getMessageListByPageNumb() {
   groupByChannel(param).then((res: any) => {
     tableData.value = res?.dailyRegisterList || []
     pageInfo.value.total = res?.total || 0
+    const datasetByChannel: any[] = []
+    tableData.value.forEach((item: any) => {
+      const index = datasetByChannel.findIndex((channel: any) => channel.name === item.channelCode)
+      if (index < 0) {
+        datasetByChannel.push({
+          name: item.channelCode,
+          values: [item.registerCount],
+        })
+      }
+      else {
+        datasetByChannel[index].values[0] = datasetByChannel[index].values[0] + item.registerCount
+      }
+    })
+    dataset.value = datasetByChannel
   }).catch(() => {
     tableData.value = []
+    dataset.value = []
   })
 }
 
@@ -111,6 +358,9 @@ onMounted(() => {
           <el-button style="margin-left: 10px;height: 50%;" @click="getMessageListByPageNumb()">
             查询
           </el-button>
+          <el-button style="margin-left: 10px;height: 50%;" @click="showDonutDialog = true">
+            统计
+          </el-button>
         </div>
         <el-table :data="tableData" height="85%">
           <el-table-column prop="channelCode" label="渠道号" />
@@ -123,6 +373,15 @@ onMounted(() => {
       </el-main>
     </el-container>
   </el-container>
+  <el-dialog
+    v-model="showDonutDialog"
+    width="900"
+  >
+    <VueUiDonut
+      :config="config"
+      :dataset="dataset"
+    />
+  </el-dialog>
 </template>
 
 <style scoped>
